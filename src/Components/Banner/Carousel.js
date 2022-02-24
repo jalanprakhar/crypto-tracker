@@ -31,15 +31,17 @@ export default function Carousel() {
     const [trending, setTrending] = useState([])
     const classes=useStyles();
     const {currency,symbol}=CryptoState();
+    const [there,setThere]=useState(true);
     const fetchTrendingCoins=useCallback(async()=>{
         const {data}=await axios.get(TrendingCoins(currency))
-        setTrending(data);
-    },[currency])
+        if(there) {setTrending(data);
+        }
+    },[currency,there])
     // console.log(trending);
     useEffect(() => {
         fetchTrendingCoins()
         
-      
+        return ()=>setThere(false);
     }, [fetchTrendingCoins])
     
     const items=trending.map((coin)=>{

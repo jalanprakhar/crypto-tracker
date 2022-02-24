@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
 import {
@@ -61,19 +61,18 @@ export default function CoinsTable() {
     },
   });
 
-  const fetchCoins = async () => {
+  const fetchCoins = useCallback(async () => {
     setLoading(true);
     const { data } = await axios.get(CoinList(currency));
-    console.log(data);
+    // console.log(data);
 
     setCoins(data);
     setLoading(false);
-  };
+  },[currency]);
 
   useEffect(() => {
     fetchCoins();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currency]);
+  }, [fetchCoins]);
 
   const handleSearch = () => {
     return coins.filter(
@@ -85,7 +84,7 @@ export default function CoinsTable() {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Container style={{ textAlign: "center" }}>
+      <Container style={{ text: "center" }}>
         <Typography
           variant="h4"
           style={{ margin: 18, fontFamily: "Montserrat" }}
@@ -113,7 +112,7 @@ export default function CoinsTable() {
                         fontFamily: "Montserrat",
                       }}
                       key={head}
-                      align={head === "Coin" ? "" : "right"}
+                      align={head === "Coin" ? "inherit" : "right"}
                     >
                       {head}
                     </TableCell>
@@ -128,7 +127,7 @@ export default function CoinsTable() {
                     const profit = row.price_change_percentage_24h > 0;
                     return (
                       <TableRow
-                        onClick={() => history.push(`/coins/${row.id}`)}
+                        onClick={() => history.push(`/coin/${row.id}`)}
                         className={classes.row}
                         key={row.name}
                       >
@@ -193,7 +192,7 @@ export default function CoinsTable() {
 
         {/* Comes from @material-ui/lab */}
         <Pagination
-          count={(handleSearch()?.length / 10).toFixed(0)}
+          count={+((handleSearch()?.length / 10).toFixed(0))}
           style={{
             padding: 20,
             width: "100%",
